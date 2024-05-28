@@ -1,4 +1,6 @@
-﻿
+﻿import ListarProdutosHome from "../../components/produtos/listarprodutoshome/ListarProdutosHome"
+import ModalProduto from "../../components/produtos/modalprodutos/ModalProduto"
+
 function Home() {
     return (
         <>
@@ -30,11 +32,15 @@ function Home() {
                         <p className='text-xl'>Aqui você encontra os melhores Games!</p>
 
                         <div className="flex justify-around gap-4">
-                            <div className='rounded text-white 
-                                            border-white border-solid border-2 py-2 px-4'
-                            >
-                                Novo Produto
-                            </div>
+                            <button className='
+                                    rounded
+                                    bg-slate-800 
+                                    text-white 
+                                    py-2 
+                                    px-4
+                                    '>
+                                <ModalProduto />
+                            </button>
                         </div>
                     </div>
 
@@ -47,6 +53,7 @@ function Home() {
                     </div>
                 </div>
             </div>
+            <ListarProdutosHome />
         </>
     )
 }
