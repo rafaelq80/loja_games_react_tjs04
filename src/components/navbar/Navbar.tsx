@@ -66,7 +66,7 @@ function Navbar() {
                         <Link to='/cadastrarcategoria' className='hover:underline'>Cadastrar Categoria</Link>
                         <Link to='' onClick={logout} className='hover:underline'>Sair</Link>
                         <Link to='/perfil'><User size={32} weight='bold' /></Link>
-                        <ShoppingCart size={32} weight='bold' />
+                        <Link to='/cart'><ShoppingCart size={32} weight='bold' /></Link>
                     </div>
                 </div>
             </div>
