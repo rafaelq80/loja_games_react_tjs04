@@ -1,8 +1,10 @@
 ﻿import { useContext, useEffect, useState } from "react"
 import { RotatingLines } from "react-loader-spinner"
 import { useNavigate, useParams } from "react-router-dom"
-import { deletar, listar } from "../../../services/Service"
+import { AuthContext } from "../../../contexts/AuthContext"
 import Produto from "../../../models/Produto"
+import { deletar, listar } from "../../../services/Service"
+import { ToastAlerta } from "../../../utils/ToastAlerta"
 
 function DeletarProduto() {
 
@@ -13,16 +15,32 @@ function DeletarProduto() {
 
     const { id } = useParams<{ id: string }>();
 
-    const token = ''
+    const { usuario, handleLogout } = useContext(AuthContext)
+    const token = usuario.token
 
     async function buscarPorId(id: string) {
         try {
-            await listar(`/produtos/${id}`, setProduto)
+            await listar(`/produtos/${id}`, setProduto, {
+                headers: {
+                    'Authorization': token
+                }
+            })
         } catch (error: any) {
-            alert('Produto não encontrado!')
-
+            if (error.toString().includes('401')) {
+                handleLogout()
+            } else {
+                ToastAlerta('Erro ao Excluir Produto!', 'erro')
+                retornar()
+            }
         }
     }
+
+    useEffect(() => {
+        if (token === '') {
+            ToastAlerta('Você precisa estar logado!', 'info')
+            navigate('/')
+        }
+    }, [token])
 
     useEffect(() => {
         if (id !== undefined) {
@@ -34,12 +52,20 @@ function DeletarProduto() {
         setIsLoading(true)
 
         try {
-            await deletar(`/produtos/${id}`)
+            await deletar(`/produtos/${id}`, {
+                headers: {
+                    'Authorization': token
+                }
+            })
 
-           alert('Produto apagado!')
+            ToastAlerta('Produto Excluído com Sucesso!', 'sucesso')
 
-        } catch (error) {
-           alert('Erro ao apagar o produto')
+        } catch (error: any) {
+            if (error.toString().includes('401')) {
+                handleLogout()
+            } else {
+                ToastAlerta('Erro ao Excluir o Produto!', 'erro')
+            }
         }
 
         setIsLoading(false)

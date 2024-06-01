@@ -1,8 +1,10 @@
-﻿import { useEffect, useState } from "react"
-import { RotatingLines } from "react-loader-spinner"
+﻿import { useState, useContext, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import Categoria from "../../../models/Categoria"
 import { deletar, listar } from "../../../services/Service"
+import Categoria from "../../../models/Categoria"
+import { RotatingLines } from "react-loader-spinner"
+import { AuthContext } from "../../../contexts/AuthContext"
+import { ToastAlerta } from "../../../utils/ToastAlerta"
 
 function DeletarCategoria() {
 
@@ -13,13 +15,32 @@ function DeletarCategoria() {
 
     const { id } = useParams<{ id: string }>();
 
+    const { usuario, handleLogout } = useContext(AuthContext)
+    const token = usuario.token
+
     async function buscarPorId(id: string) {
         try {
-            await listar(`/categorias/${id}`, setCategoria)
+            await listar(`/categorias/${id}`, setCategoria, {
+                headers: {
+                    'Authorization': token
+                }
+            })
         } catch (error: any) {
-            alert('Tema não encontrado!')
+            if (error.toString().includes('401')) {
+                handleLogout()
+            } else {
+                ToastAlerta('Categoria não Encontrada!', 'erro')
+                retornar()
+            }
         }
     }
+
+    useEffect(() => {
+        if (token === '') {
+            ToastAlerta('Você precisa estar logado!', 'info')
+            navigate('/')
+        }
+    }, [token])
 
     useEffect(() => {
         if (id !== undefined) {
@@ -31,18 +52,28 @@ function DeletarCategoria() {
         setIsLoading(true)
 
         try {
-            await deletar(`/categorias/${id}`)
+            await deletar(`/categorias/${id}`, {
+                headers: {
+                    'Authorization': token
+                }
+            })
 
-            alert('Categoria apagada com sucesso')
+            ToastAlerta('Categoria apagada!', 'sucesso')
 
-        } catch (error) {
-            alert('Erro ao apagar a categoria')
+        } catch (error: any) {
+            if (error.toString().includes('401')) {
+                handleLogout()
+            } else {
+                ToastAlerta('Erro ao Excluir Categoria!', 'erro')
+                retornar()
+            }
         }
 
         setIsLoading(false)
         retornar()
     }
 
+    // Alterar Rota
     function retornar() {
         navigate("/categorias")
     }

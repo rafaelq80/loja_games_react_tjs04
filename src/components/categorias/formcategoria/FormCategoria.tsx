@@ -1,8 +1,11 @@
-﻿import { ChangeEvent, useEffect, useState } from "react";
+﻿import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { RotatingLines } from "react-loader-spinner";
 import { useNavigate, useParams } from "react-router-dom";
+import { AuthContext } from "../../../contexts/AuthContext";
 import Categoria from "../../../models/Categoria";
 import { atualizar, cadastrar, listar } from "../../../services/Service";
+import { ToastAlerta } from "../../../utils/ToastAlerta";
+
 
 function FormCategoria() {
 
@@ -13,14 +16,32 @@ function FormCategoria() {
 
   const { id } = useParams<{ id: string }>();
 
+  const { usuario, handleLogout } = useContext(AuthContext)
+  const token = usuario.token
+
   async function buscarPorId(id: string) {
     try {
-      await listar(`/categorias/${id}`, setCategoria)
+      await listar(`/categorias/${id}`, setCategoria, {
+        headers: {
+          'Authorization': token
+        }
+      })
     } catch (error: any) {
-      alert('Categoria não encontrada!')
-      retornar();
+      if (error.toString().includes('401')) {
+        handleLogout()
+      } else {
+        ToastAlerta('Categoria não Encontrada!', 'erro')
+        retornar()
+      }
     }
   }
+
+  useEffect(() => {
+    if (token === '') {
+      ToastAlerta('Você precisa estar logado!', 'info')
+      navigate('/')
+    }
+  }, [token])
 
   useEffect(() => {
     if (id !== undefined) {
@@ -41,22 +62,39 @@ function FormCategoria() {
 
     if (id !== undefined) {
       try {
-        await atualizar(`/categorias`, categoria, setCategoria)
+        await atualizar(`/categorias`, categoria, setCategoria, {
+          headers: {
+            'Authorization': token
+          }
+        })
 
-        alert('Categoria atualizado com sucesso')
+        ToastAlerta('Categoria atualizada!', 'sucesso')
 
       } catch (error: any) {
-        alert('Erro ao atualizar o Categoria')
+        if (error.toString().includes('401')) {
+          handleLogout()
+        } else {
+          ToastAlerta('Erro ao Atualizar a Categoria!', 'erro')
+        }
       }
 
     } else {
       try {
-        await cadastrar(`/categorias`, categoria, setCategoria)
+        await cadastrar(`/categorias`, categoria, setCategoria, {
+          headers: {
+            'Authorization': token
+          }
+        })
 
-        alert('Categoria cadastrada com sucesso')
+        ToastAlerta('Categoria cadastrada!', 'sucesso')
 
       } catch (error: any) {
-        alert('Erro ao cadastrar a Categoria')
+        if (error.toString().includes('401')) {
+          handleLogout()
+        } else {
+          ToastAlerta('Erro ao Cadastrar Categoria!', 'erro')
+          retornar()
+        }
       }
     }
 
@@ -84,10 +122,12 @@ function FormCategoria() {
             type="text"
             placeholder="Categoria"
             name='tipo'
-            className="border-2 border-slate-700 rounded p-2 utral-800"
-            required
+            className="border-2 border-slate-700 rounded p-2"
             value={categoria.tipo}
             onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
+            required
+            onInvalid={e => (e.target as HTMLInputElement).setCustomValidity('Digite um Tipo de Categoria válida!')}
+            onInput={e => (e.target as HTMLInputElement).setCustomValidity('')}
           />
         </div>
         <button

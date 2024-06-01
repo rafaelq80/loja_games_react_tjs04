@@ -1,0 +1,8 @@
+﻿.fundoLogin {
+    background-image: url("https://ik.imagekit.io/vzr6ryejm/games/fundo_01.jpg?updatedAt=1706059168556");
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+}

@@ -6,12 +6,18 @@ import { atualizar, cadastrar, listar } from "../../../services/Service";
 
 import Categoria from '../../../models/Categoria';
 import Produto from '../../../models/Produto';
+import { AuthContext } from '../../../contexts/AuthContext';
+import { ToastAlerta } from '../../../utils/ToastAlerta';
 
 function FormularioProduto() {
 
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    
+    const [categoriaDefault, setCategoriaDefault] = useState<number>(0)
+    const [carregandoCategoria, setCarregandoCategoria] = useState<boolean>(true)
+
     const [categorias, setCategorias] = useState<Categoria[]>([])
 
     const [categoria, setCategoria] = useState<Categoria>({ id: 0, tipo: '', })
@@ -19,29 +25,61 @@ function FormularioProduto() {
 
     const { id } = useParams<{ id: string }>()
 
+    const { usuario, handleLogout } = useContext(AuthContext)
+    const token = usuario.token
+
     async function buscarProdutoPorId(id: string) {
         try {
-            await listar(`/produtos/${id}`, setProduto)
+            await listar(`/produtos/${id}`, setProduto, {
+                headers: {
+                    'Authorization': token
+                }
+            })
         } catch (error: any) {
-            alert("Erro ao Buscar Produto")
+            if (error.toString().includes('401')) {
+                handleLogout()
+            } else {
+                ToastAlerta('Produto não Encontrado!', 'erro')
+                retornar()
+            }
         }
     }
 
     async function buscarCategoriaPorId(id: string) {
         try {
-            await listar(`/categorias/${id}`, setCategoria)
+            await listar(`/categorias/${id}`, setCategoria, {
+                headers: {
+                    'Authorization': token
+                }
+            })
         } catch (error: any) {
-            alert("Erro ao Buscar Categoria")
+            if (error.toString().includes('401')) {
+                handleLogout()
+            } else {
+                ToastAlerta('Categoria não Encontrada!', 'erro')
+                retornar()
+            }
         }
     }
 
     async function buscarCategorias() {
         try {
-            await listar(`/categorias`, setCategorias)
+            await listar(`/categorias`, setCategorias, {
+                headers: { Authorization: token }
+            })
         } catch (error: any) {
-            alert("Erro ao Buscar Categorias")
+            if (error.toString().includes('401')) {
+                handleLogout()
+            }
         }
     }
+
+    useEffect(() => {
+        if (token === '') {
+            ToastAlerta('Você precisa estar logado!', 'info')
+            navigate('/')
+        }
+    }, [token])
 
     useEffect(() => {
         buscarCategorias()
@@ -49,7 +87,18 @@ function FormularioProduto() {
         if (id !== undefined) {
             buscarProdutoPorId(id)
         }
+
     }, [id])
+
+    useEffect(() => {
+        
+        if (produto.categoria?.id !== null && 
+            produto.categoria?.id !== undefined &&
+            produto.categoria?.id > 0 ){
+            setCategoriaDefault(produto.categoria!.id)
+            setCarregandoCategoria(false)
+        }
+    }, [produto.categoria])
 
     useEffect(() => {
         setProduto({
@@ -66,6 +115,12 @@ function FormularioProduto() {
             value = parseFloat(Number(e.target.value).toFixed(2))
         } else {
             value = e.target.value
+        }
+
+        if (categoriaDefault !== null && 
+            categoriaDefault !== undefined &&
+            categoriaDefault !== 0 ){
+                buscarCategoriaPorId(categoriaDefault.toString())
         }
 
         setProduto({
@@ -85,34 +140,44 @@ function FormularioProduto() {
 
         if (id !== undefined) {
             try {
-                await atualizar(`/produtos`, produto, setProduto);
+                await atualizar(`/produtos`, produto, setProduto, {
+                    headers: {
+                        Authorization: token,
+                    },
+                });
 
-                alert('Produto atualizado com sucesso')
+                ToastAlerta('Produto atualizado com sucesso', 'sucesso')
 
             } catch (error: any) {
-                alert('Erro ao atualizar o Produto!')
+                if (error.toString().includes('401')) {
+                    handleLogout()
+                } else {
+                    ToastAlerta('Erro ao atualizar o Produto!', 'erro')
+                }
             }
 
         } else {
             try {
-                await cadastrar(`/produtos`, produto, setProduto)
+                await cadastrar(`/produtos`, produto, setProduto, {
+                    headers: {
+                        Authorization: token,
+                    },
+                })
 
-                alert('Produto cadastrado com sucesso');
+                ToastAlerta('Produto cadastrado com sucesso', 'sucesso');
 
             } catch (error: any) {
-
-                alert('Erro ao cadastrar o Produto!')
-
+                if (error.toString().includes('401')) {
+                    handleLogout()
+                } else {
+                    ToastAlerta('Erro ao cadastrar o Produto!', 'erro')
+                }
             }
         }
 
         setIsLoading(false)
         retornar()
     }
-
-    const carregandoCategoria = categoria.tipo === '';
-
-    console.log(JSON.stringify(produto))
 
     return (
 
@@ -142,6 +207,7 @@ function FormularioProduto() {
                         value={produto.preco}
                         onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
                         type="number"
+                        step=".01"
                         placeholder="Adicione aqui o preço do Produto"
                         name="preco"
                         required
@@ -165,13 +231,16 @@ function FormularioProduto() {
 
                 <div className="flex flex-col gap-2">
                     <p>Categoria do Produto</p>
-                    <select name="categoria" id="categoria" className='border p-2 border-slate-800 rounded'
+                    <select 
+                        name="categoria" 
+                        id="categoria" 
+                        className='border p-2 border-slate-800 rounded'
                         onChange={(e) => buscarCategoriaPorId(e.currentTarget.value)}
                     >
                         <option value="" selected disabled>Selecione uma Categoria</option>
                         {categorias.map((categoria) => (
                             <>
-                                <option value={categoria.id} >{categoria.tipo}</option>
+                                <option value={categoria.id} selected={categoriaDefault === categoria.id}>{categoria.tipo}</option>
                             </>
                         ))}
                     </select>

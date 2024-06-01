@@ -9,7 +9,7 @@ interface CardProdutoProps {
 function CardProdutos({ produto }: CardProdutoProps) {
 
   return (
-    <div className='flex flex-col rounded-lg overflow-hidden justify-between bg-white my-10'>
+    <div className='flex flex-col rounded-lg overflow-hidden justify-between bg-white my-2'>
       <div className="flex justify-end items-end pt-2 pr-2">
 
         <Link to={`/editarproduto/${produto.id}`}>

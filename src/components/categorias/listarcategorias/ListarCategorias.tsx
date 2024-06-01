@@ -1,21 +1,39 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useContext, useEffect, useState } from "react";
 import Categoria from "../../../models/Categoria";
 import { listar } from "../../../services/Service";
 import CardCategorias from "../cardcategorias/CardCategorias";
 import { DNA } from 'react-loader-spinner';
+import { AuthContext } from "../../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { ToastAlerta } from "../../../utils/ToastAlerta";
 
 function ListarCategorias() {
 
+    const navigate = useNavigate();
+    
     const [categorias, setCategorias] = useState<Categoria[]>([]);
 
-    async function buscarCategorias() {
+    const { usuario, handleLogout } = useContext(AuthContext)
+    const token = usuario.token
 
+    async function buscarCategorias() {
         try {
-            await listar('/categorias', setCategorias);
+            await listar(`/categorias`, setCategorias, {
+                headers: { Authorization: token }
+            })
         } catch (error: any) {
-            alert('Erro ao listar as Categorias')
+            if (error.toString().includes('401')) {
+                handleLogout()
+            }
         }
     }
+
+    useEffect(() => {
+        if (token === '') {
+            ToastAlerta('Você precisa estar logado!', 'info')
+            navigate('/')
+        }
+    }, [token])
 
     useEffect(() => {
         buscarCategorias();
@@ -39,13 +57,10 @@ function ListarCategorias() {
                 justify-center
                 ">
                 <div className="my-4 container flex flex-col">
-
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-
                         {categorias.map((categoria) => (
                             <CardCategorias key={categoria.id} categoria={categoria} />
                         ))}
-
                     </div>
                 </div>
             </div>
