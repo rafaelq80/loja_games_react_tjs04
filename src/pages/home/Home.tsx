@@ -1,4 +1,4 @@
-﻿import ListarProdutosHome from "../../components/produtos/listarprodutoshome/ListarProdutosHome"
+﻿import ListarProdutos from "../../components/produtos/listarprodutos/ListarProdutos"
 import ModalProduto from "../../components/produtos/modalprodutos/ModalProduto"
 
 function Home() {
@@ -53,7 +53,7 @@ function Home() {
                     </div>
                 </div>
             </div>
-            <ListarProdutosHome />
+            <ListarProdutos />
         </>
     )
 }

@@ -8,8 +8,6 @@ function ListarProdutos() {
 
   const [produtos, setProdutos] = useState<Produto[]>([]);
 
-  const token = '';
-
   async function buscarProdutos() {
     await listar('/produtos', setProdutos);
   }
@@ -21,7 +19,7 @@ function ListarProdutos() {
   return (
     <>
 
-      {produtos === undefined && (
+      {produtos.length === 0 && (
         <DNA
           visible={true}
           height="200"

@@ -1,4 +1,5 @@
-﻿import { Link } from "react-router-dom"
+﻿import { Pencil, Trash } from "@phosphor-icons/react"
+import { Link } from "react-router-dom"
 import Produto from "../../../models/Produto"
 
 interface CardProdutoProps {
@@ -8,10 +9,22 @@ interface CardProdutoProps {
 function CardProdutos({ produto }: CardProdutoProps) {
 
   return (
-    <div className='flex flex-col rounded-lg overflow-hidden justify-between bg-white'>
+    <div className='flex flex-col rounded-lg overflow-hidden justify-between bg-white my-10'>
+      <div className="flex justify-end items-end pt-2 pr-2">
+
+        <Link to={`/editarproduto/${produto.id}`}>
+          <Pencil size={24} className="mr-1 hover:fill-teal-700" />
+        </Link>
+
+        <Link to={`/deletarproduto/${produto.id}`}>
+          <Trash size={24} className="mr-1 hover:fill-red-700" />
+        </Link>
+
+      </div>
+
       <div className='py-4'>
 
-        <img src={produto.foto} className='mt-1 h-40 max-w-75 mx-auto' alt="" />
+        <img src={produto.foto} className='mt-1 h-44 max-w-75 mx-auto' alt={produto.nome} />
 
         <div className='p-4'>
           <p className='text-sm text-center uppercase'>{produto.nome}</p>
@@ -25,15 +38,10 @@ function CardProdutos({ produto }: CardProdutoProps) {
         </div>
       </div>
       <div className="flex flex-wrap">
-        <Link to={`/editarproduto/${produto.id}`}
-          className='w-1/2 text-slate-100 bg-teal-500 hover:bg-teal-700 flex items-center justify-center py-2'>
-          <button>Editar</button>
-        </Link>
-
-        <Link to={`/deletarproduto/${produto.id}`}
-          className='w-1/2 text-slate-100 bg-red-500 hover:bg-red-700 flex items-center justify-center'>
-          <button>Deletar</button>
-        </Link>
+        <button className='w-full text-white bg-teal-500 hover:bg-teal-900 flex items-center justify-center py-2'
+          >
+          Comprar
+        </button>
       </div>
     </div >
   )

@@ -23,7 +23,7 @@ function ListarCategorias() {
 
     return (
         <>
-            {categorias === undefined && (
+            {categorias.length === 0 && (
                 <DNA
                     visible={true}
                     height="200"
@@ -39,12 +39,6 @@ function ListarCategorias() {
                 justify-center
                 ">
                 <div className="my-4 container flex flex-col">
-
-                    {categorias.length === 0 &&
-                        <span className="text-3xl text-center my-8">
-                            Nenhuma categoria foi encontrada
-                        </span>
-                    }
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
