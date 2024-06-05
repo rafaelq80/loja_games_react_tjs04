@@ -14,9 +14,6 @@ function FormularioProduto() {
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    
-    const [categoriaDefault, setCategoriaDefault] = useState<number>(0)
-    const [carregandoCategoria, setCarregandoCategoria] = useState<boolean>(true)
 
     const [categorias, setCategorias] = useState<Categoria[]>([])
 
@@ -90,15 +87,6 @@ function FormularioProduto() {
 
     }, [id])
 
-    useEffect(() => {
-        
-        if (produto.categoria?.id !== null && 
-            produto.categoria?.id !== undefined &&
-            produto.categoria?.id > 0 ){
-            setCategoriaDefault(produto.categoria!.id)
-            setCarregandoCategoria(false)
-        }
-    }, [produto.categoria])
 
     useEffect(() => {
         setProduto({
@@ -115,12 +103,6 @@ function FormularioProduto() {
             value = parseFloat(Number(e.target.value).toFixed(2))
         } else {
             value = e.target.value
-        }
-
-        if (categoriaDefault !== null && 
-            categoriaDefault !== undefined &&
-            categoriaDefault !== 0 ){
-                buscarCategoriaPorId(categoriaDefault.toString())
         }
 
         setProduto({
@@ -178,6 +160,8 @@ function FormularioProduto() {
         setIsLoading(false)
         retornar()
     }
+
+    const carregandoCategoria = categoria.tipo === '';
 
     return (
 
@@ -240,7 +224,7 @@ function FormularioProduto() {
                         <option value="" selected disabled>Selecione uma Categoria</option>
                         {categorias.map((categoria) => (
                             <>
-                                <option value={categoria.id} selected={categoriaDefault === categoria.id}>{categoria.tipo}</option>
+                                <option value={categoria.id}>{categoria.tipo}</option>
                             </>
                         ))}
                     </select>
