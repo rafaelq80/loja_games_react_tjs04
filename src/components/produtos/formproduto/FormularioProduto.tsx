@@ -112,8 +112,6 @@ function FormularioProduto() {
 
     const carregandoCategoria = categoria.tipo === '';
 
-    console.log(JSON.stringify(produto))
-
     return (
 
         <div className="container flex flex-col mx-auto items-center">
