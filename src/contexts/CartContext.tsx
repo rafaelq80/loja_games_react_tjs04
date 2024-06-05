@@ -21,7 +21,7 @@ export function CartProvider({ children }: CartProviderProps) {
     // Estado que armazenará os Produtos do Carrinho
     const [items, setItems] = useState<Produto[]>([])
 
-    // Estadoque retorna o número de itens do Carrinho
+    // Estado que retorna o número de itens do Carrinho
     const quantidadeItems = items.length
 
     // Função para adicionar Produtos no Carrinho
