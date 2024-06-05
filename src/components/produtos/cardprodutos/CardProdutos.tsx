@@ -6,12 +6,13 @@ import { CartContext } from "../../../contexts/CartContext"
 
 interface CardProdutoProps {
   produto: Produto
+  curtir: (id: number) => void
 }
 
-function CardProdutos({ produto }: CardProdutoProps) {
+function CardProdutos({ produto, curtir }: CardProdutoProps) {
 
   const { adicionarProduto } = useContext(CartContext)
-  
+
   return (
     <div className='flex flex-col rounded-lg overflow-hidden justify-between bg-white my-2'>
       <div className="flex justify-end items-end pt-2 pr-2">
@@ -23,6 +24,24 @@ function CardProdutos({ produto }: CardProdutoProps) {
         <Link to={`/deletarproduto/${produto.id}`}>
           <Trash size={24} className="mr-1 hover:fill-red-700" />
         </Link>
+
+        {/* 
+          Adicionamos o ícone do coração no formato SVG 
+          com o evento onClick, que executa a função curtir
+        */}
+        <button onClick={() => { curtir(produto.id) }}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="48"
+            height="48"
+            fill="#ff0000"
+            viewBox="0 0 256 256"
+            className="h-6 w-6 fill-red-600 hover:fill-red-300"
+          >
+            <path d="M240,94c0,70-103.79,126.66-108.21,129a8,8,0,0,1-7.58,0C119.79,220.66,16,164,16,94A62.07,62.07,0,0,1,78,32c20.65,0,38.73,8.88,50,23.89C139.27,40.88,157.35,32,178,32A62.07,62.07,0,0,1,240,94Z"></path>
+          </svg>
+        </button>
+        <p className="pl-1">{produto.curtir}</p>
 
       </div>
 
