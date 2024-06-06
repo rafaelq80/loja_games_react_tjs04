@@ -60,17 +60,9 @@ function FormularioProduto() {
 
     function atualizarEstado(e: ChangeEvent<HTMLInputElement>) {
 
-        let value: any;
-
-        if (e.target.name === "preco") {
-            value = parseFloat(Number(e.target.value).toFixed(2))
-        } else {
-            value = e.target.value
-        }
-
         setProduto({
             ...produto,
-            [e.target.name]: value,
+            [e.target.name]: e.target.value,
             categoria: categoria
         });
     }
@@ -140,6 +132,7 @@ function FormularioProduto() {
                         value={produto.preco}
                         onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
                         type="number"
+                        step=".01"
                         placeholder="Adicione aqui o preço do Produto"
                         name="preco"
                         required
