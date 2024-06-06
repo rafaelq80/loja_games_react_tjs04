@@ -32,7 +32,6 @@ function ListarProdutos() {
     }
   }
 
-  // Função Curtir
   async function curtir(id: number) {
 
     try {
@@ -63,8 +62,6 @@ function ListarProdutos() {
     buscarProdutos();
   }, [produtos.length]);
 
-  // Quando a função curtir for acionada, 
-  // Os Cards com os produtos serão recarregados na tela
   useEffect(() => {
     buscarProdutos();
   }, [curtir]);
