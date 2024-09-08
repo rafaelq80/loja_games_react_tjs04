@@ -7,4 +7,5 @@ export default interface Produto {
     foto: string;
     curtir: number;
     categoria: Categoria | null;
+    quantidade: number;
 }
