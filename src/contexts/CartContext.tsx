@@ -2,14 +2,18 @@
 import Produto from "../models/Produto";
 import { ToastAlerta } from "../utils/ToastAlerta";
 
+export interface Items extends Produto{
+    quantidade: number;
+}
 
 interface CartContextProps {
     adicionarProduto: (produto: Produto) => void;
     aumentarProduto: (produtoId: number) => void;
     removerProduto: (produtoId: number) => void;
     limparCart: () => void;
-    items: Produto[];
+    items: Items[];
     quantidadeItems: number;
+    valorTotal: number;
 }
 
 interface CartProviderProps {
@@ -19,10 +23,14 @@ interface CartProviderProps {
 export const CartContext = createContext({} as CartContextProps);
 
 export function CartProvider({ children }: CartProviderProps) {
-    const [items, setItems] = useState<Produto[]>([]);
+    
+    const [items, setItems] = useState<Items[]>([]);
 
     // Calcula o número total de itens no carrinho (quantidade acumulada)
     const quantidadeItems = items.reduce((acc, item) => acc + item.quantidade, 0);
+
+    // Calcula o valor total da compra
+    const valorTotal = items.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
 
     // Função para adicionar produtos ao carrinho
     function adicionarProduto(produto: Produto) {
@@ -83,7 +91,7 @@ export function CartProvider({ children }: CartProviderProps) {
 
     return (
         <CartContext.Provider 
-            value={{ adicionarProduto, aumentarProduto, removerProduto, limparCart, items, quantidadeItems }}
+            value={{ adicionarProduto, aumentarProduto, removerProduto, limparCart, items, quantidadeItems, valorTotal }}
         >
             {children}
         </CartContext.Provider>

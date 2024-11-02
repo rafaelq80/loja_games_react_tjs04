@@ -6,7 +6,7 @@ import CardCart from "../cardcart/CardCart";
 
 function Cart() {
 
-    const { items, limparCart } = useContext(CartContext)
+    const { items, quantidadeItems, valorTotal, limparCart } = useContext(CartContext)
 
     return (
         <div className="
@@ -14,6 +14,7 @@ function Cart() {
                 flex 
                 flex-col
                 justify-center
+                mb-8
                 ">
 
             <h1 className="text-4xl text-center my-4">
@@ -30,9 +31,21 @@ function Cart() {
                     ))
                 }
             </div>
-
+                <div className="text-center text-lg">
+                    <p>
+                        <span className="font-semibold">Total de items adicionados: </span> 
+                        {quantidadeItems}
+                    </p>
+                    <p>
+                        <span className="font-semibold">Valor Total compra: </span> 
+                        {Intl.NumberFormat('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL'
+                        }).format(valorTotal)}
+                    </p>
+                </div>
             <button className="rounded text-slate-100 bg-slate-400 
-          hover:bg-slate-800 w-1/4 py-2 mx-auto flex justify-center"
+          hover:bg-slate-800 w-1/4 py-2 mx-auto flex justify-center mt-8"
                 type="submit"
                 disabled={items.length === 0 ? true : false}
                 onClick={limparCart}>
